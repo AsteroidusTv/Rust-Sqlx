@@ -93,14 +93,34 @@ fn on_activate(application: &gtk4::Application) {
         let text_name = text_entry_name.text();
         let text_author = text_entry_author.text();
         let text_isbn = text_entry_isbn.text();
-        println!("Entered text: {:?}, {:?}, {:?}", text_name, text_author, text_isbn);
-        label.set_text("Hello, moon!");
 
-        let book = Book {
-        title: text_name.to_string(),
-        author: text_author.to_string(),
-        isbn: text_isbn.to_string(),  
-        };
+        if text_name.is_empty() || text_author.is_empty() || text_isbn.is_empty() {
+            label.set_text("Error: one or more entries are empty");
+        } else {
+            println!("Entered text: {:?}, {:?}, {:?}", text_name, text_author, text_isbn);
+            label.set_text("Hello, moon!");
+
+            let book = Book {
+                title: text_name.to_string(),
+                author: text_author.to_string(),
+                isbn: text_isbn.to_string(),
+            };
+
+            // Execute the asynchronous function within the GTK main loop
+            gtk4::glib::MainContext::default().spawn_local(async move {
+                let url = "postgres://dbuser:mysecretpassword@localhost:5432/bookstore";
+                let pool = sqlx::postgres::PgPool::connect(url).await.expect("Failed to connect to the database pool");
+
+                match create(&book, &pool).await {
+                    Ok(_) => {
+                        println!("Book inserted successfully!");
+                    }
+                    Err(e) => {
+                        println!("Error inserting book: {:?}", e);
+                    }
+                }
+            });
+        }
     }));
 
     // Set margin to box 
@@ -131,13 +151,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let books = read(&pool).await?;
 
-    println!("All Books:");
-    for (index, book) in books.iter().enumerate() {
-        println!("Book {}: {}", index + 1, book.title);
-        println!("Author: {}", book.author);
-        println!("ISBN: {}", book.isbn);
-        println!();
-    }
+    
 
     // Create a new application with the builder pattern
     let app = gtk4::Application::builder()
@@ -147,5 +161,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     // Run the application
     app.run();
+
+    println!("All Books:");
+    for (index, book) in books.iter().enumerate() {
+        println!("Book {}: {}", index + 1, book.title);
+        println!("Author: {}", book.author);
+        println!("ISBN: {}", book.isbn);
+        println!();
+    }
     Ok(())
 }
