@@ -149,10 +149,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     sqlx::migrate!("./migrations").run(&pool).await?;
 
-    let books = read(&pool).await?;
-
-    
-
     // Create a new application with the builder pattern
     let app = gtk4::Application::builder()
         .application_id("com.github.gtk-rs.examples.basic")
@@ -161,6 +157,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     // Run the application
     app.run();
+
+    let books = read(&pool).await?;
 
     println!("All Books:");
     for (index, book) in books.iter().enumerate() {
