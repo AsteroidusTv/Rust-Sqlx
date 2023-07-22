@@ -94,7 +94,7 @@ fn on_activate(application: &gtk4::Application) {
     // Create a button
     let button_add = gtk4::Button::with_label("Enregistrer le livre");
     let button_show = gtk4::Button::with_label("Afficher les livres");
-    let button:remove = gtk4::Button::with_label("Retirer le livre")
+    let button_remove = gtk4::Button::with_label("Retirer le livre");
 
     button_add.connect_clicked(clone!(@weak text_entry_name, @weak text_entry_author, @weak text_entry_isbn, @weak label => move |_| {
         let text_name = text_entry_name.text();
@@ -154,6 +154,26 @@ fn on_activate(application: &gtk4::Application) {
         });
     });
 
+    button_remove.connect_clicked(clone!(@weak remove_name, @weak remove_isbn => move |_|{
+        let text_name = remove_name.text();
+        let text_isbn = remove_isbn.text();
+
+        if text_name.len() == 0 && text_isbn.len() == 0 {
+            println!("Vous devez enter au moins un !")
+        }
+        else {
+            if text_name.len() > 0 &&  text_isbn.len() > 0 {
+                println!("Supprimé par les deux")
+            }
+            else if text_name.len() > 0 {
+                println!("Supprimé par nom")
+            }
+            else {
+                println!("Supprimé par isbn")
+            }
+        }
+    }));
+
 
     // Set margin to box 
     box_layout.set_margin_start(10);
@@ -168,6 +188,9 @@ fn on_activate(application: &gtk4::Application) {
     box_layout.append(&text_entry_isbn);
     box_layout.append(&button_add);
     box_layout.append(&button_show);
+    box_layout.append(&remove_name);
+    box_layout.append(&remove_isbn);
+    box_layout.append(&button_remove);
 
     // Show box on window
     window.set_child(Some(&box_layout));
