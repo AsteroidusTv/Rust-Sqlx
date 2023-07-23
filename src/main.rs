@@ -1,9 +1,13 @@
 // Imports 
+use gtk4::CssProvider;
+use gtk4::StyleContext;
 use std::error::Error;
 use sqlx::Row;
 use gtk4::prelude::*;
 use gtk4::glib::clone;
 use gtk4::glib;
+use gtk4::prelude::WidgetExt;
+use gtk4::gdk;
 
 // Book structure
 struct Book {
@@ -78,7 +82,7 @@ async fn read(conn: &sqlx::PgPool) -> Result<Vec<Book>, Box<dyn Error>> {
     books
 }
 
-// When the application is launched…
+// When the application is launched
 fn on_activate(application: &gtk4::Application) {
     // Create a new window …
     let window = gtk4::ApplicationWindow::new(application);
@@ -108,9 +112,9 @@ fn on_activate(application: &gtk4::Application) {
     text_entry_remove_isbn.set_placeholder_text(Some("Isbn"));
 
     // Create a button
-    let create_button = gtk4::Button::with_label("Enregistrer le livre");
-    let show_button = gtk4::Button::with_label("Afficher les livres");
-    let remove_button = gtk4::Button::with_label("Retirer le livre");
+    let create_button = gtk4::Button::with_label("Save Book");
+    let show_button = gtk4::Button::with_label("Show Books");
+    let remove_button = gtk4::Button::with_label("Remove Book");
 
     // When create_button is pressed
     create_button.connect_clicked(clone!(@weak text_entry_create_title, @weak text_entry_create_author, @weak text_entry_create_isbn, @weak main_title => move |_| {    
@@ -244,8 +248,20 @@ fn on_activate(application: &gtk4::Application) {
     // Show box on window
     window.set_child(Some(&box_layout));
 
+    // Load css 
+    load_css();
+
     // Show window
     window.present();
+}
+
+fn load_css() {
+    let display = gdk::Display::default().expect("Could not get default display.");
+    let provider = CssProvider::new();
+    let priority = gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION;
+
+    provider.load_from_data(include_str!("../style/style.css"));
+    StyleContext::add_provider_for_display(&display, &provider, priority);
 }
 
 #[tokio::main]
@@ -255,6 +271,7 @@ async fn main()  -> Result<(), Box<dyn Error>> {
     let main_url = "postgres://dbuser:mysecretpassword@localhost:5432/bookstore";
     let main_pool = sqlx::postgres::PgPool::connect(main_url).await?;
     sqlx::migrate!("./migrations").run(&main_pool).await?;
+
 
     // Create a new application with the builder pattern
     let app = gtk4::Application::builder()
