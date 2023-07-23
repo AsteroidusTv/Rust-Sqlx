@@ -2,8 +2,8 @@ use std::error::Error;
 use sqlx::Row;
 use gtk4::prelude::*;
 use gtk4::glib::clone;
-use gtk4::glib;
 
+use gtk4::glib;
 
 #[derive(Debug)]
 struct Book {
@@ -36,6 +36,23 @@ async fn create(book: &Book, pool: &sqlx::PgPool) -> Result<(), Box<dyn Error>> 
 
     Ok(())
 }
+
+async fn remove_book_by_isbn(pool: &sqlx::PgPool, isbn: &str) -> Result<(), Box<dyn Error>> {
+    // Utiliser une requête DELETE pour retirer le livre par ISBN de la base de données
+    let query = "DELETE FROM book WHERE isbn = $1";
+    sqlx::query(query).bind(isbn).execute(pool).await?;
+
+    Ok(())
+}
+
+async fn remove_book_by_title(pool: &sqlx::PgPool, title: &str) -> Result<(), Box<dyn Error>> {
+    // Utiliser une requête DELETE pour retirer le livre par ISBN de la base de données
+    let query = "DELETE FROM book WHERE title = $1";
+    sqlx::query(query).bind(title).execute(pool).await?;
+
+    Ok(())
+}
+
 async fn read(conn: &sqlx::PgPool) -> Result<Vec<Book>, Box<dyn Error>> {
     let query = "SELECT title, author, isbn FROM book";
     let query_result = sqlx::query(query).fetch_all(conn).await?;
@@ -73,9 +90,9 @@ fn on_activate(application: &gtk4::Application) {
     // Create text
     let label = gtk4::Label::new(Some("Hello, world!"));
     
-    // Create input name
-    let text_entry_name = gtk4::Entry::new();
-    text_entry_name.set_placeholder_text(Some("Name"));
+    // Create input title
+    let text_entry_title = gtk4::Entry::new();
+    text_entry_title.set_placeholder_text(Some("title"));
 
     // Create input author
     let text_entry_author = gtk4::Entry::new();
@@ -86,8 +103,8 @@ fn on_activate(application: &gtk4::Application) {
     text_entry_isbn.set_placeholder_text(Some("Isbn"));
 
     // Remove input
-    let remove_name = gtk4::Entry::new();
-    remove_name.set_placeholder_text(Some("Name"));
+    let remove_title = gtk4::Entry::new();
+    remove_title.set_placeholder_text(Some("title"));
     let remove_isbn = gtk4::Entry::new(); 
     remove_isbn.set_placeholder_text(Some("Isbn"));
 
@@ -96,19 +113,20 @@ fn on_activate(application: &gtk4::Application) {
     let button_show = gtk4::Button::with_label("Afficher les livres");
     let button_remove = gtk4::Button::with_label("Retirer le livre");
 
-    button_add.connect_clicked(clone!(@weak text_entry_name, @weak text_entry_author, @weak text_entry_isbn, @weak label => move |_| {
-        let text_name = text_entry_name.text();
+    button_add.connect_clicked(clone!(@weak text_entry_title, @weak text_entry_author, @weak text_entry_isbn, @weak label => move |_| {
+        let text_title = text_entry_title.text();
         let text_author = text_entry_author.text();
         let text_isbn = text_entry_isbn.text();
 
-        if text_name.is_empty() || text_author.is_empty() || text_isbn.is_empty() {
+        if text_title.is_empty() || text_author.is_empty() || text_isbn.is_empty() {
             label.set_text("Error: one or more entries are empty");
         } else {
-            println!("Entered text: {:?}, {:?}, {:?}", text_name, text_author, text_isbn);
-            label.set_text("Hello, moon!");
+                text_entry_title.set_text("");
+                text_entry_author.set_text("");
+                text_entry_isbn.set_text("");
 
             let book = Book {
-                title: text_name.to_string(),
+                title: text_title.to_string(),
                 author: text_author.to_string(),
                 isbn: text_isbn.to_string(),
             };
@@ -117,10 +135,10 @@ fn on_activate(application: &gtk4::Application) {
             gtk4::glib::MainContext::default().spawn_local(async move {
                 let url = "postgres://dbuser:mysecretpassword@localhost:5432/bookstore";
                 let pool = sqlx::postgres::PgPool::connect(url).await.expect("Failed to connect to the database pool");
-
                 match create(&book, &pool).await {
                     Ok(_) => {
-                        println!("Book inserted successfully!");
+                        println!("Entered text: {:?}, {:?}, {:?}", text_title, text_author, text_isbn); // Debug
+                        label.set_text("The book successfully entered");
                     }
                     Err(e) => {
                         println!("Error inserting book: {:?}", e);
@@ -154,24 +172,40 @@ fn on_activate(application: &gtk4::Application) {
         });
     });
 
-    button_remove.connect_clicked(clone!(@weak remove_name, @weak remove_isbn => move |_|{
-        let text_name = remove_name.text();
-        let text_isbn = remove_isbn.text();
+    button_remove.connect_clicked(clone!(@weak remove_title, @weak remove_isbn => move |_|{
+        gtk4::glib::MainContext::default().spawn_local(async move {
+            let url = "postgres://dbuser:mysecretpassword@localhost:5432/bookstore";
+            let pool = sqlx::postgres::PgPool::connect(url).await.expect("Failed to connect to the database pool");
 
-        if text_name.len() == 0 && text_isbn.len() == 0 {
-            println!("Vous devez enter au moins un !")
-        }
-        else {
-            if text_name.len() > 0 &&  text_isbn.len() > 0 {
-                println!("Supprimé par les deux")
-            }
-            else if text_name.len() > 0 {
-                println!("Supprimé par nom")
-            }
-            else {
-                println!("Supprimé par isbn")
-            }
-        }
+            let text_title = remove_title.text();
+            let text_isbn = remove_isbn.text();
+
+            if text_title.is_empty() && text_isbn.is_empty() {
+                println!("You must enter at least one value!");
+            } else if !text_title.is_empty() && !text_isbn.is_empty() {
+                println!("You cannot remove by both title and ISBN");
+            } else if !text_title.is_empty() {
+                match remove_book_by_title(&pool, &text_title).await {
+                    Ok(_) => {
+                        println!("Book removed successfully!");
+                        remove_title.set_text("")
+                    }
+                    Err(e) => {
+                        println!("Error removing book: {:?}", e);
+                    }
+                }
+            } else {
+                match remove_book_by_isbn(&pool, &text_isbn).await {
+                    Ok(_) => {
+                        println!("Book removed successfully!");
+                        remove_isbn.set_text("")
+                    }
+                    Err(e) => {
+                        println!("Error removing book: {:?}", e);
+                    }
+                }
+            };
+        }); 
     }));
 
 
@@ -183,12 +217,12 @@ fn on_activate(application: &gtk4::Application) {
 
     // Add the widgets to the box layout
     box_layout.append(&label);
-    box_layout.append(&text_entry_name);
+    box_layout.append(&text_entry_title);
     box_layout.append(&text_entry_author);
     box_layout.append(&text_entry_isbn);
     box_layout.append(&button_add);
     box_layout.append(&button_show);
-    box_layout.append(&remove_name);
+    box_layout.append(&remove_title);
     box_layout.append(&remove_isbn);
     box_layout.append(&button_remove);
 
