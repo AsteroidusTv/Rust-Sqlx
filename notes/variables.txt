@@ -1,0 +1,43 @@
+1. create_query = sqlx query for verify if a book exist
+2. count = verify if a book with the same isbn exitst
+3. insert_query = sqlx query for insert book into database
+4. remove_isbn_query = sqlx query for remove book by isbn
+5. remove_book_query = sqlx query for remove book by name
+6. show_query = sqlx query for read data in database
+7. show_query_result = get result from show_query_result (6)
+8. title_result = title result from show_query_result (7)
+9. author_result = author result from show_query_result (7)
+10. isbn_result = isbn result from show_query_result (7)
+11. window = gtk4 window
+12. box_layout = gtk4 box to show several items
+13. main_title = gtk4 label on top of te window
+14. text_entry_create_title = gtk4 entry to retrieve the title of the book in order to create it
+15. text_entry_create_author = gtk4 entry to retrieve the author of the book in order to create it
+16. text_entry_create_isbn = gtk4 entry to retrieve the isbn of the book in order to create it
+17. text_entry_remove_title = gtk4 entry to retrieve the title of the book in order to remove it
+18. text_entry_remove_isbn = gtk4 entry to retrieve the isbn of the book in order to remove it
+19. create_button = button gtk4 which allows to create a book
+20. show_button = button gtk4 which allows to show a book
+21. remove_button = button gtk4 which allows to remove a book
+22. text_create_title = get text from gtk 4 entry text_entry_create_title (14)
+23. text_create_author = get text from gtk 4 entry text_entry_create_author (15)
+24. text_create_isbn = get text from gtk 4 entry text_entry_create_isbn (16)
+25. book = call from structure to get information to create a book
+26. create_url = database url for create
+27. create_pool = database pool for create
+28. main_title_create_content = text to add at label main_title (13)  when button create_button (19) entered
+29. show_url = database url for show
+30. show_pool = database pool for show
+31. books_data = get books data from database
+32. text_remove_title = get text from gtk4 entry text_entry_remove_title (17)
+33. text_remove_isbn = get text from gtk4 entry text_entry_remove_isbn (18)
+34. main_title_remove_content = text to add at label main_title (13) when button remove_button (21) entered
+37. main_url = database url for main
+36. main_pool = database pool for main
+37. app = gtk4 application
+
+Things to do : 
+
+1. Show books on window
+2. Make it impossible to remove non-existing books
+3. Stylize the window
