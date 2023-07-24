@@ -1,13 +1,38 @@
 .back {
   background: #161623;
 }
-
+.box_layout {
+  margin: 10px;
+}
+.create_box {
+  margin-bottom: 10px;
+}
+.remove_box {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.show_box{
+  margin-top: 10px;
+}
 .text_entry {
   border-radius: 100px;
   padding: 5px;
   color: black;
   background: white;
 }
-.text_entry:focus {
-  outline: none;
+button {
+  border-radius: 100px;
+  padding: 6px;
+  color: black;
+  background: white;
+  border: 2px solid white;
+  transition: 0.3s ease-in-out;
+}
+button:hover {
+  background: transparent;
+  border: 2px solid white;
+  color: white;
+}
+.main-title {
+  font-size: 30px;
 }

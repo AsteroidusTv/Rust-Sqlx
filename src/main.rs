@@ -93,9 +93,21 @@ fn on_activate(application: &gtk4::Application) {
     window.add_css_class("back");
     // Create a vertical box layout to hold the widgets
     let box_layout = gtk4::Box::new(gtk4::Orientation::Vertical, 10);
+    let create_box = gtk4::Box::new(gtk4::Orientation::Vertical, 10);
+    let remove_box = gtk4::Box::new(gtk4::Orientation::Vertical, 10);
+    let show_box = gtk4::Box::new(gtk4::Orientation::Vertical, 10);
+
+    // Set create_box css class
+    box_layout.add_css_class("box_layout");
+    create_box.add_css_class("create_box");
+    remove_box.add_css_class("remove_box");
+    show_box.add_css_class("show_box");
 
     // Create main title on top of the window
     let main_title = gtk4::Label::new(Some("Bookstore"));
+
+    // Set main title css class
+    main_title.add_css_class("main-title");
     
     // Create input create_title, create_author, create_isbn, remove_title, remove_isbn
     let text_entry_create_title = gtk4::Entry::new();
@@ -117,7 +129,7 @@ fn on_activate(application: &gtk4::Application) {
     text_entry_create_isbn.add_css_class("text_entry");
     text_entry_remove_title.add_css_class("text_entry");
     text_entry_remove_isbn.add_css_class("text_entry");
-    
+
     // Create a button
     let create_button = gtk4::Button::with_label("Save Book");
     let show_button = gtk4::Button::with_label("Show Books");
@@ -235,22 +247,27 @@ fn on_activate(application: &gtk4::Application) {
     }));
 
 
-    // Set margin to box 
-    box_layout.set_margin_start(10);
-    box_layout.set_margin_end(10);
-    box_layout.set_margin_top(10);
-    box_layout.set_margin_bottom(10);
 
-    // Add the widgets to the box layout
+
+    // Add the widget to the create_box
+    create_box.append(&text_entry_create_title);
+    create_box.append(&text_entry_create_author);
+    create_box.append(&text_entry_create_isbn);
+    create_box.append(&create_button);
+
+    // Add the widgets to the remove_box
+    remove_box.append(&text_entry_remove_title);
+    remove_box.append(&text_entry_remove_isbn);
+    remove_box.append(&remove_button);
+
+    // Add the widgets to the show_boy
+    show_box.append(&show_button);
+
+    // Add the widgets to the box_layout
     box_layout.append(&main_title);
-    box_layout.append(&text_entry_create_title);
-    box_layout.append(&text_entry_create_author);
-    box_layout.append(&text_entry_create_isbn);
-    box_layout.append(&create_button);
-    box_layout.append(&show_button);
-    box_layout.append(&text_entry_remove_title);
-    box_layout.append(&text_entry_remove_isbn);
-    box_layout.append(&remove_button);
+    box_layout.append(&create_box);
+    box_layout.append(&remove_box);
+    box_layout.append(&show_box);
 
     // Show box on window
     window.set_child(Some(&box_layout));
