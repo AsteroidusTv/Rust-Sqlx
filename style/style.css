@@ -1,8 +1,13 @@
-button {
+.back {
+  background: #161623;
+}
+
+.text_entry {
+  border-radius: 100px;
+  padding: 5px;
   color: black;
   background: white;
-  text-transform: uppercase;
 }
-.hello {
-  color: red;
+.text_entry:focus {
+  outline: none;
 }

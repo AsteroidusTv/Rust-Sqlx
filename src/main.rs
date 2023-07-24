@@ -90,7 +90,7 @@ fn on_activate(application: &gtk4::Application) {
     // Set title to the window
     window.set_title(Some("Bookstore"));
     window.set_default_size(700, 400);
-
+    window.add_css_class("back");
     // Create a vertical box layout to hold the widgets
     let box_layout = gtk4::Box::new(gtk4::Orientation::Vertical, 10);
 
@@ -111,6 +111,13 @@ fn on_activate(application: &gtk4::Application) {
     text_entry_remove_title.set_placeholder_text(Some("Title"));  
     text_entry_remove_isbn.set_placeholder_text(Some("Isbn"));
 
+    // Set text entry css class
+    text_entry_create_title.add_css_class("text_entry");
+    text_entry_create_author.add_css_class("text_entry");
+    text_entry_create_isbn.add_css_class("text_entry");
+    text_entry_remove_title.add_css_class("text_entry");
+    text_entry_remove_isbn.add_css_class("text_entry");
+    
     // Create a button
     let create_button = gtk4::Button::with_label("Save Book");
     let show_button = gtk4::Button::with_label("Show Books");
