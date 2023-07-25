@@ -1,5 +1,7 @@
 .back {
   background: #161623;
+  border-radius: 20px;
+  padding: 5px;
 }
 .box_layout {
   margin: 10px;
@@ -36,3 +38,44 @@ button:hover {
 .main-title {
   font-size: 30px;
 }
+.test_box {
+  border-radius: 50px;
+  height: 5px;
+  width: 100%;
+  background: white;
+}
+
+.titlebar {
+  background: transparent;
+  border: none;
+  font-size: 30px;
+  font-weight: bold;
+
+}
+
+.titlebar button.close {
+    background-color: #e53935;
+    border: none;
+    box-shadow: 5px 5px 0px 0px rgba(0,0,0,0.75);
+
+}
+
+.titlebar button.minimize {
+    background-color: #fdd835;
+    border: none;
+    cursor: pointer;
+    box-shadow: 5px 5px 0px 0px rgba(0,0,0,0.75);
+    
+}
+
+.titlebar button.maximize {
+    background-color: #43a047;
+    border: none;
+    box-shadow: 5px 5px 0px 0px rgba(0,0,0,0.75);
+}
+
+.titlebar button.maximize:active, .titlebar button.minimize:active, .titlebar button.close:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+

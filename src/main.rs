@@ -96,15 +96,18 @@ fn on_activate(application: &gtk4::Application) {
     let create_box = gtk4::Box::new(gtk4::Orientation::Vertical, 10);
     let remove_box = gtk4::Box::new(gtk4::Orientation::Vertical, 10);
     let show_box = gtk4::Box::new(gtk4::Orientation::Vertical, 10);
+    let test_box = gtk4::Box::new(gtk4::Orientation::Vertical, 10);
 
     // Set create_box css class
     box_layout.add_css_class("box_layout");
     create_box.add_css_class("create_box");
     remove_box.add_css_class("remove_box");
     show_box.add_css_class("show_box");
+    test_box.add_css_class("test_box");
 
     // Create main title on top of the window
-    let main_title = gtk4::Label::new(Some("Bookstore"));
+    let main_title = gtk4::Label::new(Some(""));
+    let test_title = gtk4::Label::new(Some(""));
 
     // Set main title css class
     main_title.add_css_class("main-title");
@@ -263,10 +266,16 @@ fn on_activate(application: &gtk4::Application) {
     // Add the widgets to the show_boy
     show_box.append(&show_button);
 
+    // Add the widgets tp the test_box 
+    test_box.append(&test_title);
+
     // Add the widgets to the box_layout
     box_layout.append(&main_title);
+    box_layout.append(&test_box);
     box_layout.append(&create_box);
+    box_layout.append(&test_box);
     box_layout.append(&remove_box);
+    box_layout.append(&test_box);
     box_layout.append(&show_box);
 
     // Show box on window
