@@ -1,4 +1,6 @@
 // Imports 
+extern crate gsk4;
+use gtk4::Stack;
 use gtk4::CssProvider;
 use gtk4::StyleContext;
 use std::error::Error;
@@ -8,6 +10,9 @@ use gtk4::glib::clone;
 use gtk4::glib;
 use gtk4::prelude::WidgetExt;
 use gtk4::gdk;
+
+
+
 
 // Book structure
 struct Book {
@@ -90,28 +95,50 @@ fn on_activate(application: &gtk4::Application) {
     // Set title to the window
     window.set_title(Some("Bookstore"));
     window.set_default_size(700, 400);
-    window.add_css_class("back");
+
+    // Create a stack to hold the pages
+     
     // Create a vertical box layout to hold the widgets
     let box_layout = gtk4::Box::new(gtk4::Orientation::Vertical, 10);
     let create_box = gtk4::Box::new(gtk4::Orientation::Vertical, 10);
     let remove_box = gtk4::Box::new(gtk4::Orientation::Vertical, 10);
     let show_box = gtk4::Box::new(gtk4::Orientation::Vertical, 10);
-    let test_box = gtk4::Box::new(gtk4::Orientation::Vertical, 10);
+    
+    // Create stack
+    let stack = Stack::new();
+    box_layout.append(&stack);  
 
-    // Set create_box css class
-    box_layout.add_css_class("box_layout");
-    create_box.add_css_class("create_box");
-    remove_box.add_css_class("remove_box");
-    show_box.add_css_class("show_box");
-    test_box.add_css_class("test_box");
+    // Create page 1/2/3
+    stack.add_named(&show_box, Some("main_page"));
+    stack.add_named(&create_box, Some("page_add"));
+    stack.add_named(&remove_box, Some("page_remove"));
+
+    // Create buttons to switch between pages
+    let switch_to_page_main_button = gtk4::Button::with_label("Show Books");
+    let switch_to_page_add_button = gtk4::Button::with_label("Create a book");
+    let switch_to_page_remove_button = gtk4::Button::with_label("Remove a book");
+
+    // Switch to Page 1 when the first button is clicked
+    let stack_clone1 = stack.clone();
+    switch_to_page_main_button.connect_clicked(move |_| {
+        stack_clone1.set_visible_child_name("main_page");
+    });
+
+    // Switch to Page 2 when the first button is clicked
+    let stack_clone2 = stack.clone();
+    switch_to_page_add_button.connect_clicked(move |_| {
+        stack_clone2.set_visible_child_name("page_add");
+    });
+
+    // Switch to Page 3 when the second button is clicked
+    let stack_clone3 = stack.clone();
+    switch_to_page_remove_button.connect_clicked(move |_| {
+        stack_clone3.set_visible_child_name("page_remove");
+    });
 
     // Create main title on top of the window
     let main_title = gtk4::Label::new(Some(""));
-    let test_title = gtk4::Label::new(Some(""));
 
-    // Set main title css class
-    main_title.add_css_class("main-title");
-    
     // Create input create_title, create_author, create_isbn, remove_title, remove_isbn
     let text_entry_create_title = gtk4::Entry::new();
     let text_entry_create_author = gtk4::Entry::new();
@@ -126,17 +153,33 @@ fn on_activate(application: &gtk4::Application) {
     text_entry_remove_title.set_placeholder_text(Some("Title"));  
     text_entry_remove_isbn.set_placeholder_text(Some("Isbn"));
 
-    // Set text entry css class
-    text_entry_create_title.add_css_class("text_entry");
-    text_entry_create_author.add_css_class("text_entry");
-    text_entry_create_isbn.add_css_class("text_entry");
-    text_entry_remove_title.add_css_class("text_entry");
-    text_entry_remove_isbn.add_css_class("text_entry");
-
     // Create a button
-    let create_button = gtk4::Button::with_label("Save Book");
     let show_button = gtk4::Button::with_label("Show Books");
+    let create_button = gtk4::Button::with_label("Save Book");
     let remove_button = gtk4::Button::with_label("Remove Book");
+    
+    // CSS CLASSES
+
+    // Set window css class
+    window.add_css_class("back");
+
+    // Set create_box css class
+    box_layout.add_css_class("box-layout");
+    create_box.add_css_class("create-box");
+    remove_box.add_css_class("remove-box");
+    show_box.add_css_class("show-box");
+
+    // Set text entry css class
+    text_entry_create_title.set_css_classes(&["text-entry", "top"]);
+    text_entry_create_author.add_css_class("text-entry");
+    text_entry_create_isbn.add_css_class("text-entry");
+    text_entry_remove_title.add_css_class("text-entry");
+    text_entry_remove_isbn.add_css_class("text-entry");
+
+    // Set buttons css class
+    // show_button.add_css_class("change-buttons");
+    // create_button.add_css_class("change-buttons");
+    // remove_button.add_css_class("change-buttons");
 
     // When create_button is pressed
     create_button.connect_clicked(clone!(@weak text_entry_create_title, @weak text_entry_create_author, @weak text_entry_create_isbn, @weak main_title => move |_| {    
@@ -266,17 +309,15 @@ fn on_activate(application: &gtk4::Application) {
     // Add the widgets to the show_boy
     show_box.append(&show_button);
 
-    // Add the widgets tp the test_box 
-    test_box.append(&test_title);
-
     // Add the widgets to the box_layout
     box_layout.append(&main_title);
-    box_layout.append(&test_box);
-    box_layout.append(&create_box);
-    box_layout.append(&test_box);
-    box_layout.append(&remove_box);
-    box_layout.append(&test_box);
-    box_layout.append(&show_box);
+    box_layout.append(&switch_to_page_main_button);
+    box_layout.append(&switch_to_page_add_button);
+    box_layout.append(&switch_to_page_remove_button);
+
+    // set animation
+    stack.set_transition_type(gtk4::StackTransitionType::SlideLeftRight);
+    stack.set_transition_duration(500);
 
     // Show box on window
     window.set_child(Some(&box_layout));

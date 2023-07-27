@@ -3,24 +3,29 @@
   border-radius: 20px;
   padding: 5px;
 }
-.box_layout {
+.box-layout {
   margin: 10px;
 }
-.create_box {
+.create-box {
   margin-bottom: 10px;
 }
-.remove_box {
+.remove-box {
   margin-top: 10px;
   margin-bottom: 10px;
 }
-.show_box{
+.show-box{
   margin-top: 10px;
 }
-.text_entry {
+.text-entry {
   border-radius: 100px;
   padding: 5px;
   color: black;
   background: white;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.top {
+  margin-top: 10px;
 }
 button {
   border-radius: 100px;
@@ -29,6 +34,8 @@ button {
   background: white;
   border: 2px solid white;
   transition: 0.3s ease-in-out;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 button:hover {
   background: transparent;
@@ -38,13 +45,6 @@ button:hover {
 .main-title {
   font-size: 30px;
 }
-.test_box {
-  border-radius: 50px;
-  height: 5px;
-  width: 100%;
-  background: white;
-}
-
 .titlebar {
   background: transparent;
   border: none;
@@ -52,30 +52,39 @@ button:hover {
   font-weight: bold;
 
 }
-
 .titlebar button.close {
     background-color: #e53935;
     border: none;
     box-shadow: 5px 5px 0px 0px rgba(0,0,0,0.75);
-
+    padding: 5px;
+    margin: 0px;
 }
-
 .titlebar button.minimize {
     background-color: #fdd835;
     border: none;
-    cursor: pointer;
     box-shadow: 5px 5px 0px 0px rgba(0,0,0,0.75);
-    
+    padding: 5px;
+    margin: 0px;
 }
-
 .titlebar button.maximize {
     background-color: #43a047;
     border: none;
     box-shadow: 5px 5px 0px 0px rgba(0,0,0,0.75);
+    padding: 5px;
+    margin: 5px;
 }
-
+.titlebar button.maximize:hover, .titlebar button.minimize:hover, .titlebar button.close:hover {
+    color: white;
+}
 .titlebar button.maximize:active, .titlebar button.minimize:active, .titlebar button.close:active {
-  transform: translate(2px, 2px);
-  box-shadow: none;
+    transform: translate(2px, 2px);
+    box-shadow: none;
 }
-
+@keyframes all {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
